@@ -9,7 +9,7 @@ $fa=2;
 //print_parameters
 print_sensor=0;
 print_body=1;
-print_rim=1;
+print_rim=0;
 
 //shell parameters
 inch=25.4;
@@ -65,7 +65,7 @@ module bearing_edge() {
 }
 
 module shell() {
-  mounting_hole=COURSE_METRIC_BOLT_MAJOR_THREAD_DIAMETERS[4]; 
+  mounting_hole=COURSE_METRIC_BOLT_MAJOR_THREAD_DIAMETERS[5]; 
 	difference() {
 		union() {
       cylinder (h=shell_h, r=or);
@@ -80,12 +80,16 @@ module struts() {
   difference() {
     union() {
       difference() {
-				hull() for (i=[0:4]) {
+				for (i=[0:4]) {
 					rotate([0,0,i*72]) {
-						translate ([rim_bolt_offset,0,0]) cylinder(r=METRIC_NUT_AC_WIDTHS[rim_bolt_size]/2+1, h=strut_h);
+						hull() {
+							translate ([rim_bolt_offset,0,0]) cylinder(r=METRIC_NUT_AC_WIDTHS[rim_bolt_size]/2+1, h=strut_h);
+							translate ([0,sensor_r/2,0]) cylinder(r=METRIC_NUT_AC_WIDTHS[rim_bolt_size]/2+1, h=strut_h);
+							translate ([0,-sensor_r/2,0]) cylinder(r=METRIC_NUT_AC_WIDTHS[rim_bolt_size]/2+1, h=strut_h);
+						}
 					}
 				}
-				translate ([0,0,-0.5]) cylinder (h=shell_h+1,r=ir);
+				//translate ([0,0,-0.5]) cylinder (h=shell_h+1,r=ir);
 			}
 			for (i=[0:4]) {
 				rotate([0,0,i*72]) {
