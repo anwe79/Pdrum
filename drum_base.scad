@@ -2,7 +2,7 @@
 //Copyright 2013 Andreas Wettergren
 
 /*
-		This program is free software: you can redistribute it and/or modify
+    This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
@@ -59,74 +59,74 @@ rim_t=hoop_t+rim_bolt_size;
 rim_bolt_offset=hoop_or+rim_t-hoop_t+rim_bolt_r;
 
 module bearing_edge() {
-	union() {
-		//base trapezoid
-		rotate_extrude() {
-			translate([or-thickness, 0, 0])
-			polygon( points=[[0,0], [triangle_side, triangle_top], [triangle_side+bearing_top, triangle_top], [thickness,0]] );
-		}
-		//top radius
-		difference() {
-			translate ([0,0,triangle_top-bearing_r+bearing_h])
-			rotate_extrude() {
-				translate([or-thickness/2, 0, 0])
-				circle(r=bearing_r, $fs=0.3); 
-			}
-			translate ([0,0,triangle_top-bearing_r]) 
-			rotate_extrude() {
-				translate([or-thickness/2, 0, 0])
-				square(bearing_r*2, center=true);
-			}
-		}
-	}
+  union() {
+    //base trapezoid
+    rotate_extrude() {
+      translate([or-thickness, 0, 0])
+      polygon( points=[[0,0], [triangle_side, triangle_top], [triangle_side+bearing_top, triangle_top], [thickness,0]] );
+    }
+    //top radius
+    difference() {
+      translate ([0,0,triangle_top-bearing_r+bearing_h])
+      rotate_extrude() {
+        translate([or-thickness/2, 0, 0])
+        circle(r=bearing_r, $fs=0.3); 
+      }
+      translate ([0,0,triangle_top-bearing_r]) 
+      rotate_extrude() {
+        translate([or-thickness/2, 0, 0])
+        square(bearing_r*2, center=true);
+      }
+    }
+  }
 }
 
 module shell() {
   mounting_hole=COURSE_METRIC_BOLT_MAJOR_THREAD_DIAMETERS[5]; 
-	difference() {
-		union() {
+  difference() {
+    union() {
       cylinder (h=shell_h, r=or);
       translate([-or-thickness/2,0,mounting_hole*2]) rotate([0,90,0]) cylinder(r=mounting_hole*2, h=thickness);
     }
     translate([-or-thickness/2-.5,0,mounting_hole*2]) rotate([0,90,0]) cylinder(r=mounting_hole/2, h=thickness*1.5+1);
-		translate ([0,0,-0.5]) cylinder (h=shell_h+1,r=ir);
-	}
+    translate ([0,0,-0.5]) cylinder (h=shell_h+1,r=ir);
+  }
 }
 
 module struts() {
   difference() {
     union() {
       difference() {
-				for (i=[0:4]) {
-					rotate([0,0,i*72]) {
-						hull() {
-							translate ([rim_bolt_offset,0,0]) cylinder(r=METRIC_NUT_AC_WIDTHS[rim_bolt_size]/2+1, h=strut_h);
-							translate ([0,sensor_r/2,0]) cylinder(r=METRIC_NUT_AC_WIDTHS[rim_bolt_size]/2+1, h=strut_h);
-							translate ([0,-sensor_r/2,0]) cylinder(r=METRIC_NUT_AC_WIDTHS[rim_bolt_size]/2+1, h=strut_h);
-						}
-					}
-				}
-				//translate ([0,0,-0.5]) cylinder (h=shell_h+1,r=ir);
-			}
-			for (i=[0:4]) {
-				rotate([0,0,i*72]) {
-					translate ([0, -(METRIC_NUT_AC_WIDTHS[rim_bolt_size]+2)/2, 0]) cube(size=[rim_bolt_offset, METRIC_NUT_AC_WIDTHS[rim_bolt_size]+2, strut_h]);
-				}
-			}
-			cylinder(r=sensor_r+spring_r*2, h=strut_h);
-		}
-			for (i=[0:4]) {
-				rotate([0,0,i*72]) translate ([rim_bolt_offset,0,-0.5]) {
-					#translate([0,0,METRIC_NUT_THICKNESS[4]+.4]) rotate([0,180,0]) nylock(4);
-					cylinder(r=rim_bolt_r+.1, h=strut_h+1);
-				}
-			}
-			translate([0,0,-0.5]) cylinder(r=COURSE_METRIC_BOLT_MAJOR_THREAD_DIAMETERS[3]/2+.1, h=strut_h+1);
-			#translate([0,0,strut_h-METRIC_NUT_THICKNESS[3]+.1]) nylock(3); 
-			rod_hole(rod_r*2);
-			rotate([0,0,120]) rod_hole(rod_r*2);
-			rotate([0,0,240]) rod_hole(rod_r*2);
-	}
+        for (i=[0:4]) {
+          rotate([0,0,i*72]) {
+            hull() {
+              translate ([rim_bolt_offset,0,0]) cylinder(r=METRIC_NUT_AC_WIDTHS[rim_bolt_size]/2+1, h=strut_h);
+              translate ([0,sensor_r/2,0]) cylinder(r=METRIC_NUT_AC_WIDTHS[rim_bolt_size]/2+1, h=strut_h);
+              translate ([0,-sensor_r/2,0]) cylinder(r=METRIC_NUT_AC_WIDTHS[rim_bolt_size]/2+1, h=strut_h);
+            }
+          }
+        }
+        //translate ([0,0,-0.5]) cylinder (h=shell_h+1,r=ir);
+      }
+      for (i=[0:4]) {
+        rotate([0,0,i*72]) {
+          translate ([0, -(METRIC_NUT_AC_WIDTHS[rim_bolt_size]+2)/2, 0]) cube(size=[rim_bolt_offset, METRIC_NUT_AC_WIDTHS[rim_bolt_size]+2, strut_h]);
+        }
+      }
+      cylinder(r=sensor_r+spring_r*2, h=strut_h);
+    }
+      for (i=[0:4]) {
+        rotate([0,0,i*72]) translate ([rim_bolt_offset,0,-0.5]) {
+          #translate([0,0,METRIC_NUT_THICKNESS[4]+.4]) rotate([0,180,0]) nylock(4);
+          cylinder(r=rim_bolt_r+.1, h=strut_h+1);
+        }
+      }
+      translate([0,0,-0.5]) cylinder(r=COURSE_METRIC_BOLT_MAJOR_THREAD_DIAMETERS[3]/2+.1, h=strut_h+1);
+      #translate([0,0,strut_h-METRIC_NUT_THICKNESS[3]+.1]) nylock(3); 
+      rod_hole(rod_r*2);
+      rotate([0,0,120]) rod_hole(rod_r*2);
+      rotate([0,0,240]) rod_hole(rod_r*2);
+  }
 }
 
 module rod_mount() {
