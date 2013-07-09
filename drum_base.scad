@@ -1,11 +1,28 @@
-//Draft of printable electronic drum shell
-//All measurements in mm except shell radius due to drum head size conventions
+//Draft of printable electronic drum
+//Copyright 2013 Andreas Wettergren
+
+/*
+		This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 use <MCAD/shapes.scad>;
 include <MCAD/nuts_and_bolts.scad>;
 use </home/nuppe/RepRap/Things/Mechanical/nylock.scad>
 $fs=1;
 $fa=2;
 
+//All measurements in mm except shell radius due to drum head size conventions
 //print_parameters
 print_sensor=0;
 print_body=1;
