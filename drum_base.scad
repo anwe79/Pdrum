@@ -100,7 +100,7 @@ module struts() {
         for (i=[0:4]) {
           rotate([0,0,i*72]) {
             hull() {
-              translate ([rim_bolt_offset,0,0]) cylinder(r=METRIC_NUT_AC_WIDTHS[rim_bolt_size]/2+1, h=strut_h);
+              translate ([rim_bolt_offset,0,0]) cylinder(r=METRIC_NUT_AC_WIDTHS[rim_bolt_size]/2+2, h=strut_h);
               translate ([0,sensor_r/2,0]) cylinder(r=METRIC_NUT_AC_WIDTHS[rim_bolt_size]/2+1, h=strut_h);
               translate ([0,-sensor_r/2,0]) cylinder(r=METRIC_NUT_AC_WIDTHS[rim_bolt_size]/2+1, h=strut_h);
             }
