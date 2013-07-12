@@ -17,8 +17,8 @@
 */
 
 use <MCAD/shapes.scad>;
+use <MCAD/triangles.scad>;
 include <MCAD/nuts_and_bolts.scad>;
-use </home/nuppe/RepRap/Things/Mechanical/nylock.scad>
 $fs=1;
 $fa=2;
 
@@ -82,21 +82,18 @@ module bearing_edge() {
 }
 
 module shell() {
-  mounting_hole=COURSE_METRIC_BOLT_MAJOR_THREAD_DIAMETERS[5]; 
   difference() {
-    union() {
-      cylinder (h=shell_h, r=or);
-      translate([-or-thickness/2,0,mounting_hole*2]) rotate([0,90,0]) cylinder(r=mounting_hole*2, h=thickness);
-    }
-    translate([-or-thickness/2-.5,0,mounting_hole*2]) rotate([0,90,0]) cylinder(r=mounting_hole/2, h=thickness*1.5+1);
+    cylinder (h=shell_h, r=or);
     translate ([0,0,-0.5]) cylinder (h=shell_h+1,r=ir);
+    translate([-or-1,0,0]) rotate([0,75,0]) cylinder(r=6.5, h=23);
   }
 }
 
 module struts() {
+  mounting_hole=COURSE_METRIC_BOLT_MAJOR_THREAD_DIAMETERS[5]; 
+  mount_offset=or/3;
   difference() {
     union() {
-      difference() {
         for (i=[0:4]) {
           rotate([0,0,i*72]) {
             hull() {
@@ -106,26 +103,40 @@ module struts() {
             }
           }
         }
-        //translate ([0,0,-0.5]) cylinder (h=shell_h+1,r=ir);
-      }
       for (i=[0:4]) {
         rotate([0,0,i*72]) {
           translate ([0, -(METRIC_NUT_AC_WIDTHS[rim_bolt_size]+2)/2, 0]) cube(size=[rim_bolt_offset, METRIC_NUT_AC_WIDTHS[rim_bolt_size]+2, strut_h]);
         }
       }
       cylinder(r=sensor_r+spring_r*2, h=strut_h);
-    }
-      for (i=[0:4]) {
-        rotate([0,0,i*72]) translate ([rim_bolt_offset,0,-0.5]) {
-          #translate([0,0,METRIC_NUT_THICKNESS[4]+.4]) rotate([0,180,0]) nylock(4);
-          cylinder(r=rim_bolt_r+.1, h=strut_h+1);
-        }
+      //mounting/jack strut 
+      linear_extrude(height=strut_h) {
+        polygon(points=[[mount_offset*cos(144), mount_offset*sin(144)], [mount_offset*cos(216), mount_offset*sin(216)], [or*cos(185),or*sin(185)], [or*cos(175),or*sin(175)]  ]);
       }
-      translate([0,0,-0.5]) cylinder(r=COURSE_METRIC_BOLT_MAJOR_THREAD_DIAMETERS[3]/2+.1, h=strut_h+1);
-      #translate([0,0,strut_h-METRIC_NUT_THICKNESS[3]+.1]) nylock(3); 
-      rod_hole(rod_r*2);
-      rotate([0,0,120]) rod_hole(rod_r*2);
-      rotate([0,0,240]) rod_hole(rod_r*2);
+      translate([-or,0,0]) rotate([0,75,0]) cylinder(r=7, h=24);
+    }
+    for (i=[0:4]) {
+      rotate([0,0,i*72]) translate ([rim_bolt_offset,0,-0.5]) {
+        #translate([0,0,METRIC_NUT_THICKNESS[4]+.4]) rotate([0,180,0]) nutHole(4);
+        cylinder(r=rim_bolt_r+.1, h=strut_h+1);
+      }
+    }
+    translate([0,0,-0.5]) cylinder(r=COURSE_METRIC_BOLT_MAJOR_THREAD_DIAMETERS[3]/2+.1, h=strut_h+1);
+    #translate([0,0,strut_h-METRIC_NUT_THICKNESS[3]+.1]) nutHole(3); 
+    rod_hole(rod_r*2);
+    rotate([0,0,120]) rod_hole(rod_r*2);
+    rotate([0,0,240]) rod_hole(rod_r*2);
+    //mount and jack holes
+    translate([-mount_offset*1.2,0,-.5]) cylinder(r=mounting_hole/2, h=strut_h+1);
+    translate([-or-1,0,0]) rotate([0,75,0]) cylinder(r=6.5, h=23);
+    translate([-or-1,0,0]) rotate([0,75,0]) cylinder(r=3, h=25);
+    translate([-or,0,0]) rotate([0,75,0]) translate([0,0,30]) cube(12, center=true);
+    translate([-or,0,0]) rotate([0,75,0]) translate([0,0,23.5]) intersection() {
+      cylinder(r=4, h=2);
+      cube([6,8,2], center=true);
+    }
+    translate([-or+12.5,0,-3.5]) cube([25,14,7], center=true);
+    translate([-or,0,0]) cube([5,14,15], center=true);
   }
 }
 
