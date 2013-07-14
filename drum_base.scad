@@ -24,16 +24,16 @@ $fa=2;
 
 //All measurements in mm except shell radius due to drum head size conventions
 //print_parameters
-print_sensor=0;
-print_body=1;
+print_sensor=1;
+print_body=0;
 print_rim=0;
 
 //shell parameters
 inch=25.4;
-thickness=5;
+thickness=3;
 or=2.95*inch; //default 6" head, remember to change hoop_or to.
 ir=or-(thickness);
-shell_h=20;
+shell_h=19;
 //bearing parameters
 bearing_angle=60;
 bearing_r=1.5;
@@ -44,18 +44,24 @@ triangle_top=tan(bearing_angle)*triangle_side;
 //misc parameters
 strut_h=METRIC_NUT_THICKNESS[4]*1.5;
 sensor_r=13.5;
-rod_r=2.6;
+//Assume M4 for sensor screw, long M3s are hard to find.
+//These parameters should cover most M4 screw heads
+sensor_screw_head_h=4; 
+sensor_screw_head_r=5;
+sensor_screw_r=COURSE_METRIC_BOLT_MAJOR_THREAD_DIAMETERS[4]/2;
+sensor_mount_screw_r=COURSE_METRIC_BOLT_MAJOR_THREAD_DIAMETERS[3]/2;
+sensor_mount_nut_width=METRIC_NUT_AC_WIDTHS[3];
+sensor_mount_depth=10;
 platform_h=2;
-spring_r=5;
 rim_bolt_size=4;
 rim_bolt_r=COURSE_METRIC_BOLT_MAJOR_THREAD_DIAMETERS[rim_bolt_size]/2;
 
 //hoop parameters, modeled on triggerhead 6" heads, with some margin.
-hoop_t=7.5;
-hoop_or=85;
+hoop_t=7;
+hoop_or=84;
 hoop_h=7;
-rim_h=hoop_h+8;
-rim_t=hoop_t+rim_bolt_size;
+rim_h=hoop_h/2+4;
+rim_t=hoop_t+rim_bolt_size*0.75;
 rim_bolt_offset=hoop_or+rim_t-hoop_t+rim_bolt_r;
 
 module bearing_edge() {
@@ -108,7 +114,7 @@ module struts() {
           translate ([0, -(METRIC_NUT_AC_WIDTHS[rim_bolt_size]+2)/2, 0]) cube(size=[rim_bolt_offset, METRIC_NUT_AC_WIDTHS[rim_bolt_size]+2, strut_h]);
         }
       }
-      cylinder(r=sensor_r+spring_r*2, h=strut_h);
+      cylinder(r=sensor_r+2, h=strut_h);
       //mounting/jack strut 
       linear_extrude(height=strut_h) {
         polygon(points=[[mount_offset*cos(144), mount_offset*sin(144)], [mount_offset*cos(216), mount_offset*sin(216)], [or*cos(185),or*sin(185)], [or*cos(175),or*sin(175)]  ]);
@@ -117,15 +123,17 @@ module struts() {
     }
     for (i=[0:4]) {
       rotate([0,0,i*72]) translate ([rim_bolt_offset,0,-0.5]) {
-        #translate([0,0,METRIC_NUT_THICKNESS[4]+.4]) rotate([0,180,0]) nutHole(4);
+        translate([0,0,METRIC_NUT_THICKNESS[4]+.4]) rotate([0,180,0]) nutHole(4);
         cylinder(r=rim_bolt_r+.1, h=strut_h+1);
       }
     }
-    translate([0,0,-0.5]) cylinder(r=COURSE_METRIC_BOLT_MAJOR_THREAD_DIAMETERS[3]/2+.1, h=strut_h+1);
-    #translate([0,0,strut_h-METRIC_NUT_THICKNESS[3]+.1]) nutHole(3); 
-    rod_hole(rod_r*2);
-    rotate([0,0,120]) rod_hole(rod_r*2);
-    rotate([0,0,240]) rod_hole(rod_r*2);
+    //sensor mount holes
+    translate([0,0,-.5]) cylinder(r=sensor_r+1, h=strut_h+1);
+    for(i=[0,144,216]) {
+      rotate([0,0,i]) translate([sensor_r+sensor_mount_nut_width+2, 0, 0]) {
+        translate([0,0,-.5]) cylinder(r=COURSE_METRIC_BOLT_MAJOR_THREAD_DIAMETERS[3]/2, h=sensor_mount_depth+platform_h-strut_h+1);
+      }
+    }
     //mount and jack holes
     translate([-mount_offset*1.2,0,-.5]) cylinder(r=mounting_hole/2, h=strut_h+1);
     translate([-or-1,0,0]) rotate([0,75,0]) cylinder(r=6.5, h=23);
@@ -140,46 +148,36 @@ module struts() {
   }
 }
 
-module rod_mount() {
-    translate([sensor_r+3,0,0]) cylinder(r=spring_r+1, h=platform_h);
-}
-
-module rod_hole(depth=platform_h) {
-    translate([sensor_r+3,0,-0.4]) cylinder(r=rod_r, h=depth+1);
-}
-
 module sensor_platform() {
-  difference() {
+  difference () {
     union() {
-      hull() {
-        rod_mount();
-        rotate([0,0,120]) rod_mount();
-        rotate([0,0,240]) rod_mount();
-      }
-      //sensor space
-      cylinder(r=sensor_r+2, h=platform_h);
-      //adjustment screw slot
-      difference () {
-        translate([0,0,platform_h]) cylinder(r=2.55, h=platform_h);
-        translate([0,0,platform_h+.1]) cylinder(r=1.55, h=platform_h+.2);
-      }
+      cylinder(r=sensor_r, h=platform_h);
+      translate([0,0,+1]) cylinder(r=sensor_screw_head_r+1, h=sensor_screw_head_h);
     }
-    rod_hole();
-    rotate([0,0,120]) rod_hole();
-    rotate([0,0,240]) rod_hole();
+    translate([0,0,-1]) cylinder(r=sensor_screw_head_r, h=sensor_screw_head_h+1);
+    translate([0,0,-1]) cylinder(r=sensor_screw_r, h=sensor_screw_head_h+platform_h+1);
   }
 }
 
-
-module rod_cap() {
-  union() {
-    cylinder(r=spring_r+1, h=2);
-    difference() {
-      cylinder(r=rod_r+1, h=4);
-      translate([0,0,.1]) cylinder(r=rod_r, h=4.2); 
+module sensor_mount() {
+  difference() {
+    union() {
+      cylinder(r=sensor_r+sensor_mount_nut_width+2, h=platform_h);
+      for(i=[0,144,216]) {
+        rotate([0,0,i]) translate([sensor_r+sensor_mount_nut_width+2, 0, 0]) {
+          cylinder(r=sensor_mount_nut_width/2+2, h=sensor_mount_depth+platform_h-strut_h);
+        }
+      }
     }
-  }  
-}
+    for(i=[0,144,216]) {
+      rotate([0,0,i]) translate([sensor_r+sensor_mount_nut_width+2, 0, 0]) {
+        translate([0,0,-.5]) cylinder(r=COURSE_METRIC_BOLT_MAJOR_THREAD_DIAMETERS[3]/2, h=sensor_mount_depth+platform_h-strut_h+1);
+        translate([0,0,-.1]) nutHole(3);
+      }
+    }
+    translate([0,0,-.5]) cylinder(r=sensor_screw_r, h=platform_h+1);
+  }
+} 
 
 module rim() {
   difference() { 
@@ -191,8 +189,8 @@ module rim() {
       }
       cylinder(r=hoop_or+rim_t-hoop_t, h=rim_h);
     }
-    translate([0,0,-0.5]) cylinder(r=hoop_or-hoop_t/2, rim_h-hoop_h+1);
-    translate([0,0,rim_h-hoop_h-.5]) cylinder(r=hoop_or, hoop_h+1);
+    translate([0,0,-0.5]) cylinder(r=hoop_or-hoop_t/2, rim_h-hoop_h/2+1);
+    translate([0,0,rim_h-hoop_h/2-.5]) cylinder(r=hoop_or, hoop_h/2+1);
     for (i=[0:4]) {
       rotate([0,0,i*72]) translate([rim_bolt_offset,0,-.5]) #cylinder(r=rim_bolt_r, h=rim_h+1);
     }
@@ -200,12 +198,8 @@ module rim() {
 }
 
 if (print_sensor) {
-  translate([0,or*2,0]) { 
-    for (i=[0:2]) {
-      rotate([0,0,i*120]) translate([sensor_r+spring_r*4,0,0]) rod_cap();
-    }
-    sensor_platform();
-  }
+  translate([0,or*2,0]) sensor_platform();
+  translate([0,or*2+sensor_r*3,0]) sensor_mount();
 }
 
 if (print_body) {
