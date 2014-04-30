@@ -25,8 +25,8 @@ $fa=2;
 //All measurements in mm except shell radius due to drum head size conventions
 //print_parameters
 print_sensor=1;
-print_body=0;
-print_rim=0;
+print_body=1;
+print_rim=1;
 
 //shell parameters
 inch=25.4;
@@ -198,7 +198,7 @@ module rim() {
 }
 
 if (print_sensor) {
-  //translate([0,or*2,0]) sensor_platform();
+  translate([0,or*2,0]) sensor_platform();
   translate([0,or*2+sensor_r*3,0]) sensor_mount();
 }
 
