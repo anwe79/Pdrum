@@ -51,7 +51,7 @@ sensor_screw_head_r=5;
 sensor_screw_r=COURSE_METRIC_BOLT_MAJOR_THREAD_DIAMETERS[4]/2;
 sensor_mount_screw_r=COURSE_METRIC_BOLT_MAJOR_THREAD_DIAMETERS[3]/2;
 sensor_mount_nut_width=METRIC_NUT_AC_WIDTHS[3];
-sensor_mount_depth=10;
+sensor_mount_depth=15;
 platform_h=2;
 rim_bolt_size=4;
 rim_bolt_r=COURSE_METRIC_BOLT_MAJOR_THREAD_DIAMETERS[rim_bolt_size]/2;
@@ -198,7 +198,7 @@ module rim() {
 }
 
 if (print_sensor) {
-  translate([0,or*2,0]) sensor_platform();
+  //translate([0,or*2,0]) sensor_platform();
   translate([0,or*2+sensor_r*3,0]) sensor_mount();
 }
 
