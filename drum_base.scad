@@ -30,10 +30,10 @@ print_rim=1;
 
 //shell parameters
 inch=25.4;
-thickness=3;
+thickness=4;
 or=2.95*inch; //default 6" head, remember to change hoop_or to.
 ir=or-(thickness);
-shell_h=19;
+shell_h=25;
 //bearing parameters
 bearing_angle=60;
 bearing_r=1.5;
@@ -42,7 +42,7 @@ bearing_top=2*sqrt(bearing_h*(2*bearing_r-bearing_h));
 triangle_side=(thickness-bearing_top)/2; 
 triangle_top=tan(bearing_angle)*triangle_side; 
 //misc parameters
-strut_h=METRIC_NUT_THICKNESS[4]*1.5;
+strut_h=METRIC_NUT_THICKNESS[4]*2;
 sensor_r=13.5;
 //Assume M4 for sensor screw, long M3s are hard to find.
 //These parameters should cover most M4 screw heads
@@ -55,14 +55,16 @@ sensor_mount_depth=15;
 platform_h=2;
 rim_bolt_size=4;
 rim_bolt_r=COURSE_METRIC_BOLT_MAJOR_THREAD_DIAMETERS[rim_bolt_size]/2;
+rim_bolt_head_h=4;
+rim_bolt_head_r=3.5;
 
 //hoop parameters, modeled on triggerhead 6" heads, with some margin.
 hoop_t=7;
 hoop_or=84;
 hoop_h=7;
-rim_h=hoop_h/2+4;
-rim_t=hoop_t+rim_bolt_size*0.75;
-rim_bolt_offset=hoop_or+rim_t-hoop_t+rim_bolt_r;
+rim_h=hoop_h+rim_bolt_head_h+1.5;
+rim_t=3;
+rim_bolt_offset=hoop_or+rim_t+rim_bolt_r;
 
 module bearing_edge() {
   union() {
@@ -187,12 +189,12 @@ module rim() {
           rotate([0,0,i*72]) translate([rim_bolt_offset,0,0]) cylinder(r=rim_bolt_r*2, h=rim_h);
         }
       }
-      cylinder(r=hoop_or+rim_t-hoop_t, h=rim_h);
+      cylinder(r=hoop_or+rim_t, h=rim_h);
     }
-    translate([0,0,-0.5]) cylinder(r=hoop_or-hoop_t/2, rim_h-hoop_h/2+1);
-    translate([0,0,rim_h-hoop_h/2-.5]) cylinder(r=hoop_or, hoop_h/2+1);
+    translate([0,0,-0.5]) cylinder(r=hoop_or-2/3*hoop_t, rim_h-hoop_h+1);
+    translate([0,0,rim_h-hoop_h-.5]) cylinder(r=hoop_or, hoop_h+1);
     for (i=[0:4]) {
-      rotate([0,0,i*72]) translate([rim_bolt_offset,0,-.5]) #cylinder(r=rim_bolt_r, h=rim_h+1);
+      rotate([0,0,i*72]) translate([rim_bolt_offset,0,-.5]) cylinder(r=rim_bolt_r, h=rim_h+1);
     }
   }
 }
