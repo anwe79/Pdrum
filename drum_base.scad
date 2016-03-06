@@ -24,8 +24,8 @@ $fa=2;
 
 //All measurements in mm except shell radius due to drum head size conventions
 //print_parameters
-print_sensor=1;
-print_body=1;
+print_sensor=0;
+print_body=0;
 print_rim=1;
 
 //shell parameters
@@ -186,7 +186,7 @@ module rim() {
     union () {
       hull() {
         for(i=[0:4]) {
-          rotate([0,0,i*72]) translate([rim_bolt_offset,0,0]) cylinder(r=rim_bolt_r*2, h=rim_h);
+          rotate([0,0,i*72]) translate([rim_bolt_offset,0,0]) cylinder(r=rim_bolt_head_r+1, h=rim_h);
         }
       }
       cylinder(r=hoop_or+rim_t, h=rim_h);
@@ -196,6 +196,9 @@ module rim() {
     for (i=[0:4]) {
       rotate([0,0,i*72]) translate([rim_bolt_offset,0,-.5]) cylinder(r=rim_bolt_r, h=rim_h+1);
     }
+    for (i=[0:4]) {
+      rotate([0,0,i*72]) translate([rim_bolt_offset,0,-0.5]) cylinder(r=rim_bolt_head_r, h=rim_bolt_head_h+1);
+    }    
   }
 }
 
